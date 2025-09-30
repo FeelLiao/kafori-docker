@@ -8,12 +8,13 @@ FROM continuumio/anaconda3:latest
 RUN conda config --set show_channel_urls yes
 
 # 将项目文件复制到容器中
-COPY ../backend /opt/backend
+RUN git clone https://github.com/FeelLiao/kafori.git /opt/
 
 # 定位到工作目录
-WORKDIR /opt/
+WORKDIR /opt/kafori
 
-RUN mkdir /opt/backend/conf
+RUN mkdir /opt/kafori/backend/conf
+RUN mkdir /opt/kafori/ref
 
 # 创建 Conda 环境
 RUN conda env create -f backend/kafori_conda.yml && \
