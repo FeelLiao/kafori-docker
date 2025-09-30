@@ -8,7 +8,7 @@ FROM continuumio/anaconda3:latest
 RUN conda config --set show_channel_urls yes
 
 # 将项目文件复制到容器中
-RUN git clone https://github.com/FeelLiao/kafori.git /opt/
+RUN git clone https://github.com/FeelLiao/kafori.git /opt/kafori
 
 # 定位到工作目录
 WORKDIR /opt/kafori

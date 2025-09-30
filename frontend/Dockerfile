@@ -6,7 +6,7 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
 
 # 复制前端代码
-RUN git clone https://github.com/FeelLiao/kafori.git /opt/
+RUN git clone https://github.com/FeelLiao/kafori.git /opt/kafori
 
 # 定位到前端工作目录
 WORKDIR /opt/kafori/frontend
