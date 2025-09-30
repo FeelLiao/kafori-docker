@@ -6,10 +6,10 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
 
 # 复制前端代码
-COPY ../frontend/ /opt/kafori-frontend
+RUN git clone https://github.com/FeelLiao/kafori.git /opt/
 
 # 定位到前端工作目录
-WORKDIR /opt/kafori-frontend
+WORKDIR /opt/kafori/frontend
 
 
 # 使用npm并开始构建
@@ -24,8 +24,9 @@ ARG FRONTEND_BUILD_DIR=dist
 FROM nginx:1.27 AS runtime
 
 # 拷贝前端打包产物到 Nginx 静态目录
-COPY --from=frontend-build /opt/kafori-frontend/${FRONTEND_BUILD_DIR}/ /usr/share/nginx/html/
+COPY --from=frontend-build /opt/kafori/frontend/${FRONTEND_BUILD_DIR}/ /usr/share/nginx/html/
 
 
 EXPOSE 80
+EXPOSE 443
 CMD ["nginx","-g","daemon off;"]
