@@ -21,7 +21,7 @@ RUN set -eux; \
       *) echo "Unsupported arch: $TARGETARCH"; exit 1 ;; \
     esac; \
     curl -fsSL -o /tmp/miniforge.sh \
-      https://github.com/conda-forge/miniforge/releases/download/Miniforge3-${MINIFORGE_VERSION}/Miniforge3-${MINIFORGE_VERSION}-Linux-${MF_ARCH}.sh; \
+      https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-25.3.0-3-Linux-x86_64.sh; \
     bash /tmp/miniforge.sh -b -p /opt/conda; \
     rm /tmp/miniforge.sh
 ENV CONDA_DIR=/opt/conda
@@ -32,8 +32,7 @@ RUN conda config --set show_channel_urls yes
 
 # ---------- 获取项目代码 ----------
 # 如需锁定某个分支/commit，可加 ARG，比如 ARG KAFORI_REF=main
-ARG KAFORI_REF=main
-RUN git clone --depth=1 --branch ${KAFORI_REF} https://github.com/FeelLiao/kafori.git /opt/kafori
+RUN git clone --depth=1 https://github.com/FeelLiao/kafori.git /opt/kafori
 WORKDIR /opt/kafori
 
 # ---------- 创建 Conda 环境 ----------
