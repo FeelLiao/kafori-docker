@@ -14,7 +14,7 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_0900_ai_ci
     ports:
-      - "3309:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./kafori.sql:/docker-entrypoint-initdb.d/1_kafori.sql:ro
