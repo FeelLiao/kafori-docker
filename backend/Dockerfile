@@ -46,7 +46,12 @@ ENV PATH=/opt/conda/envs/kafori/bin:$PATH
 ENV POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /opt/kafori/backend
+
 RUN poetry install --no-root
+
+WORKDIR /opt/kafori
 
 # ---------- 运行用户（可选） ----------
 # 你也可以不创建用户，直接用 root；这里演示安全做法
