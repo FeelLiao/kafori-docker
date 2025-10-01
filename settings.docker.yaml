@@ -1,5 +1,5 @@
 # ---------- General Settings ----------
-log_dir: backend/kafori_running.log
+log_dir: backend/logs/kafori_running.log
 start_r_core: 2
 r_timeout: 60        # R 进程超时时间，单位秒
 r_retries: 1         # R 进程重试次数

@@ -58,7 +58,7 @@ services:
       # 使用容器内专用配置，覆盖默认 settings.yaml（把主机名改成 mysql/redis）
       - ./settings.docker.yaml:/opt/kafori/backend/conf/settings.yaml:ro
       # 可选：持久化日志
-      - ./logs/kafori_backend_running.log:/opt/kafori/backend/kafori_running.log
+      - ./logs:/opt/kafori/backend/logs
 
       - ./ref:/opt/kafori/ref:ro
 
