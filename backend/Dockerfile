@@ -1,36 +1,60 @@
-# 使用anaconda3镜像
-FROM continuumio/anaconda3:latest
+# 基础镜像（也可以换成 ubuntu:22.04 或 almalinux 等）
+FROM debian:bookworm-slim
 
+# ---------- 基础依赖 ----------
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates git build-essential tzdata \
+ && rm -rf /var/lib/apt/lists/*
 
-# 将 Conda 添加到 PATH
-#ENV PATH="/usr/local/conda/bin:$PATH"
+ENV TZ=Asia/Shanghai
 
+# ---------- 安装 Miniforge ----------
+ARG MINIFORGE_VERSION=24.3.0-0
+ARG TARGETARCH
+# 架构映射（BuildKit 会注入 TARGETARCH: amd64 / arm64）
+# Miniforge 发布文件用的命名：x86_64 / aarch64
+RUN set -eux; \
+    case "$TARGETARCH" in \
+      "amd64")  MF_ARCH="x86_64" ;; \
+      "arm64")  MF_ARCH="aarch64" ;; \
+      *) echo "Unsupported arch: $TARGETARCH"; exit 1 ;; \
+    esac; \
+    curl -fsSL -o /tmp/miniforge.sh \
+      https://github.com/conda-forge/miniforge/releases/download/Miniforge3-${MINIFORGE_VERSION}/Miniforge3-${MINIFORGE_VERSION}-Linux-${MF_ARCH}.sh; \
+    bash /tmp/miniforge.sh -b -p /opt/conda; \
+    rm /tmp/miniforge.sh
+ENV CONDA_DIR=/opt/conda
+ENV PATH=${CONDA_DIR}/bin:$PATH
+
+# 默认使用 mamba 以加速
 RUN conda config --set show_channel_urls yes
 
-# 将项目文件复制到容器中
-RUN git clone https://github.com/FeelLiao/kafori.git /opt/kafori
-
-# 定位到工作目录
+# ---------- 获取项目代码 ----------
+# 如需锁定某个分支/commit，可加 ARG，比如 ARG KAFORI_REF=main
+ARG KAFORI_REF=main
+RUN git clone --depth=1 --branch ${KAFORI_REF} https://github.com/FeelLiao/kafori.git /opt/kafori
 WORKDIR /opt/kafori
 
-RUN mkdir /opt/kafori/backend/conf
-RUN mkdir /opt/kafori/ref
-
-# 创建 Conda 环境
-RUN conda env create -f backend/kafori_conda.yml && \
-    conda clean --all --yes
-
-# 激活 Conda 环境
-RUN conda init bash
+# ---------- 创建 Conda 环境 ----------
+# 使用 mamba 快速创建；环境名应在 yml 中定义（假设叫 kafori）
+RUN mamba env create -f backend/kafori_conda.yml && mamba clean -afy
+# 让后续层直接使用该环境的 Python / pip / poetry
 ENV CONDA_DEFAULT_ENV=kafori
-ENV CONDA_PREFIX=/opt/conda/envs/kafori
-ENV PATH="$CONDA_PREFIX/bin:$PATH"
+ENV PATH=/opt/conda/envs/kafori/bin:$PATH
 
-
+# ---------- 安装 Poetry 并安装项目依赖 ----------
+ENV POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN poetry install --no-root
 
-# 暴露端口
+# ---------- 运行用户（可选） ----------
+# 你也可以不创建用户，直接用 root；这里演示安全做法
+
 EXPOSE 10020
 
-# 启动 FastAPI 应用
+# 健康检查（后端最好有 /health 之类接口）
+# HEALTHCHECK CMD curl -fsS http://127.0.0.1:10020/health || exit 1
+
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "10020"]
