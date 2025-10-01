@@ -11,6 +11,8 @@ RUN git clone https://github.com/FeelLiao/kafori.git /opt/kafori
 # 定位到前端工作目录
 WORKDIR /opt/kafori/frontend
 
+COPY frontend/.env.production ./.env.production
+
 
 # 使用npm并开始构建
 RUN --mount=type=cache,target=/root/.npm \
