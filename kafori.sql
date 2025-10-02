@@ -74,7 +74,7 @@ CREATE TABLE gene_express (
     unique_id   VARCHAR(100) primary key comment "sample的 unique_id",
     sample_id   VARCHAR(100) NOT NULL ,
     tpm_blob     MediumBLOB,
-    counts_blob  MediumBLOB,
+    counts_blob  MediumBLOB
 ) ENGINE=InnoDB;
 
 
