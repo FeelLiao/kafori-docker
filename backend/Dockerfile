@@ -11,16 +11,9 @@ ENV TZ=Asia/Shanghai
 
 # ---------- 安装 Miniforge ----------
 ARG MINIFORGE_VERSION=24.3.0-0
-ARG TARGETARCH
 # 架构映射（BuildKit 会注入 TARGETARCH: amd64 / arm64）
 # Miniforge 发布文件用的命名：x86_64 / aarch64
-RUN set -eux; \
-    case "$TARGETARCH" in \
-      "amd64")  MF_ARCH="x86_64" ;; \
-      "arm64")  MF_ARCH="aarch64" ;; \
-      *) echo "Unsupported arch: $TARGETARCH"; exit 1 ;; \
-    esac; \
-    curl -fsSL -o /tmp/miniforge.sh \
+RUN curl -fsSL -o /tmp/miniforge.sh \
       https://github.com/conda-forge/miniforge/releases/download/25.3.0-3/Miniforge3-25.3.0-3-Linux-x86_64.sh; \
     bash /tmp/miniforge.sh -b -p /opt/conda; \
     rm /tmp/miniforge.sh
