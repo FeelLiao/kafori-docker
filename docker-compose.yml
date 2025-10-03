@@ -39,9 +39,7 @@ services:
       retries: 20
 
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    image: feelliao/kafori-backend:2.0.0dev
     container_name: kafori-backend
     depends_on:
       mysql:
