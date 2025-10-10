@@ -39,7 +39,7 @@ services:
       retries: 20
 
   backend:
-    image: feelliao/kafori-backend:latest
+    image: feelliao/kafori-backend:2.0dev
     container_name: kafori-backend
     depends_on:
       mysql:
@@ -47,8 +47,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
-    ports:
-      - "10020:10020"
+    expose:
+      - "10020"
     environment:
       TZ: "Asia/Shanghai"
     volumes:
@@ -60,9 +60,7 @@ services:
 
 
   frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
+    image: feelliao/kafori-frontend:2.0dev
     container_name: kafori-frontend
     depends_on:
       backend:
@@ -81,11 +79,12 @@ services:
   sequenceserver:
     image: wurmlab/sequenceserver
     container_name: kafori-sequenceserver
-    restart: unless-stopped
-    ports:
-      - "4567:4567"
+    restart: unless-stopped 
+    expose:
+      - "4567"
     volumes:
-      - ./sequenceserver:/db:ro
+      - /media/sdc/ltq/blastdb:/db:ro
+      - ./sequenceserver/settings.conf:/root/.sequenceserver.conf:ro
 
 volumes:
   mysql_data:
